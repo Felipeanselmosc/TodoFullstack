@@ -1,9 +1,3 @@
-# Starter pipeline
-
-# Start with a minimal pipeline that you can customize to build and deploy your code.
-# Add steps that build, run tests, deploy, and more:
-# https://aka.ms/yaml
-
 trigger:
 - main
 
@@ -11,20 +5,37 @@ pool:
   vmImage: ubuntu-latest
 
 steps:
-- script: echo Hello, world!
-  displayName: 'Run a one-line script'
 
-- script: |
-    echo Add other tasks to build, test, and deploy your project.
-    echo See https://aka.ms/yaml
-  displayName: 'Run a multi-line script'
+- task: DotNetCoreCLI@2
+  displayName: Build Backend
+  inputs:
+    command: 'build'
+    projects: 'server/*.csproj'
+
+- task: DotNetCoreCLI@2
+  displayName: Test Backend
+  inputs:
+    command: 'test'
+    projects: 'server/*.csproj'
 
 - task: Docker@2
+  displayName: Build and Push Backend
   inputs:
     containerRegistry: 'todoacr'
-    repository: 'Felipe Anselmo Soares Costa 2tdspr'
+    repository: 'todo-api'
     command: 'buildAndPush'
-    Dockerfile: '**/Dockerfile'
+    Dockerfile: 'server/Dockerfile'
     tags: |
-      $(Build.BuildId)
       latest
+      $(Build.BuildId)
+
+- task: Docker@2
+  displayName: Build and Push Frontend
+  inputs:
+    containerRegistry: 'todoacr'
+    repository: 'todo-web'
+    command: 'buildAndPush'
+    Dockerfile: 'client/Dockerfile'
+    tags: |
+      latest
+      $(Build.BuildId)
