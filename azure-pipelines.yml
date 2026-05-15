@@ -10,13 +10,13 @@ steps:
   displayName: Build Backend
   inputs:
     command: 'build'
-    projects: 'server/*.csproj'
+    projects: 'server/*.sln'
 
 - task: DotNetCoreCLI@2
   displayName: Test Backend
   inputs:
     command: 'test'
-    projects: 'server/*.csproj'
+    projects: 'server/*.sln'
 
 - task: Docker@2
   displayName: Build and Push Backend
